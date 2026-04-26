@@ -1,0 +1,22 @@
+name: Deployment help
+description: Get help with Docker, Compose, GHCR, or reverse proxy setup
+labels: [deployment]
+body:
+  - type: input
+    id: image
+    attributes:
+      label: Image/tag
+      placeholder: ghcr.io/owner/calorie-tracker:latest
+  - type: textarea
+    id: compose
+    attributes:
+      label: Compose or run command
+      description: Paste relevant redacted Docker Compose or docker run config.
+      render: yaml
+  - type: textarea
+    id: symptoms
+    attributes:
+      label: Symptoms/logs
+      description: Include health check result, browser/API errors, and relevant logs.
+    validations:
+      required: true
