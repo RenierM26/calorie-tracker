@@ -71,6 +71,10 @@ By default the database is created at `./data/tracker.db`. Override with `DATA_D
 
 For self-hosting, reverse proxy, backup, restore, and update procedures, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
+## Roadmap
+
+Future improvement ideas and project scope boundaries are tracked in [ROADMAP.md](ROADMAP.md).
+
 ## Docker build and run
 
 ```bash
