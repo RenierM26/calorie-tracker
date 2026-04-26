@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="Demo dashboard screenshot with synthetic meal and weight data">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#182040"/><stop offset="1" stop-color="#0f1220"/></linearGradient>
+    <linearGradient id="card" x1="0" x2="1"><stop stop-color="#171b2e"/><stop offset="1" stop-color="#1e2340"/></linearGradient>
+    <style>text{font-family:Inter,system-ui,Arial,sans-serif;fill:#ecf0ff}.muted{fill:#a8b2d4}.small{font-size:18px}.title{font-size:34px;font-weight:700}.h2{font-size:24px;font-weight:700}.num{font-size:36px;font-weight:800}.card{fill:url(#card);stroke:#2a3055;stroke-width:1.5}.input{fill:#10152d;stroke:#3b4371;stroke-width:1.2}.accent{fill:#67d5b5}.blue{fill:#7aa2ff}.line{fill:none;stroke:#7aa2ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.cal{fill:none;stroke:#67d5b5;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}</style>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <text x="48" y="60" class="title">Calorie &amp; Weight Tracker</text>
+  <text x="48" y="92" class="muted small">Demo data only — no personal information</text>
+  <rect x="48" y="120" width="340" height="250" rx="16" class="card"/>
+  <text x="72" y="158" class="h2">Add meal</text>
+  <rect x="72" y="182" width="130" height="42" rx="10" class="input"/><text x="88" y="209" class="muted small">2026-04-24</text>
+  <rect x="218" y="182" width="130" height="42" rx="10" class="input"/><text x="235" y="209" class="muted small">Dinner</text>
+  <rect x="72" y="238" width="276" height="42" rx="10" class="input"/><text x="88" y="265" class="muted small">Salmon, rice, vegetables</text>
+  <rect x="72" y="294" width="130" height="42" rx="10" class="input"/><text x="88" y="321" class="muted small">0.62 kg</text>
+  <rect x="218" y="294" width="130" height="42" rx="10" class="input"/><text x="235" y="321" class="muted small">720 kcal</text>
+  <rect x="420" y="120" width="220" height="118" rx="16" class="card"/><text x="444" y="158" class="muted small">Today</text><text x="444" y="205" class="num">1,960</text><text x="572" y="205" class="muted small">kcal</text>
+  <rect x="660" y="120" width="220" height="118" rx="16" class="card"/><text x="684" y="158" class="muted small">7 day avg</text><text x="684" y="205" class="num">2,040</text><text x="812" y="205" class="muted small">kcal</text>
+  <rect x="900" y="120" width="252" height="118" rx="16" class="card"/><text x="924" y="158" class="muted small">Latest weight</text><text x="924" y="205" class="num">81.8</text><text x="1024" y="205" class="muted small">kg</text>
+  <rect x="420" y="258" width="732" height="300" rx="16" class="card"/><text x="444" y="298" class="h2">Calories &amp; weight trend</text>
+  <line x1="470" y1="500" x2="1110" y2="500" stroke="#333a66"/><line x1="470" y1="440" x2="1110" y2="440" stroke="#2a3055"/><line x1="470" y1="380" x2="1110" y2="380" stroke="#2a3055"/>
+  <polyline class="cal" points="480,450 580,390 680,420 780,350 880,430 980,370 1090,400"/>
+  <polyline class="line" points="480,470 580,465 680,455 780,448 880,442 980,434 1090,428"/>
+  <circle cx="1090" cy="400" r="8" class="accent"/><circle cx="1090" cy="428" r="8" class="blue"/>
+  <text x="470" y="535" class="muted small">Mon</text><text x="680" y="535" class="muted small">Wed</text><text x="890" y="535" class="muted small">Fri</text><text x="1060" y="535" class="muted small">Sun</text>
+  <rect x="48" y="394" width="340" height="266" rx="16" class="card"/><text x="72" y="432" class="h2">Recent meals</text>
+  <text x="72" y="478" class="small">Protein smoothie</text><text x="292" y="478" class="muted small">290</text>
+  <text x="72" y="520" class="small">Pasta primavera</text><text x="292" y="520" class="muted small">760</text>
+  <text x="72" y="562" class="small">Tuna bowl</text><text x="292" y="562" class="muted small">610</text>
+  <text x="72" y="604" class="small">Omelette and toast</text><text x="292" y="604" class="muted small">480</text>
+  <rect x="420" y="584" width="732" height="76" rx="16" class="card"/><text x="444" y="631" class="small muted">All values shown are synthetic demo data for repository screenshots.</text>
+</svg>

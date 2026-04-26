@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="Demo journal screenshot with synthetic meal data">
+  <defs><linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#182040"/><stop offset="1" stop-color="#0f1220"/></linearGradient><linearGradient id="card" x1="0" x2="1"><stop stop-color="#171b2e"/><stop offset="1" stop-color="#1e2340"/></linearGradient><style>text{font-family:Inter,system-ui,Arial,sans-serif;fill:#ecf0ff}.muted{fill:#a8b2d4}.small{font-size:18px}.title{font-size:34px;font-weight:700}.h2{font-size:24px;font-weight:700}.card{fill:url(#card);stroke:#2a3055;stroke-width:1.5}.input{fill:#10152d;stroke:#3b4371;stroke-width:1.2}.pill{fill:#263052}.row{fill:#10152d;stroke:#2a3055}</style></defs>
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <text x="48" y="60" class="title">Meal Journal</text><text x="48" y="92" class="muted small">Search, filter, edit, and export demo meal history</text>
+  <rect x="48" y="120" width="1104" height="120" rx="16" class="card"/><text x="72" y="158" class="h2">Filters</text>
+  <rect x="72" y="178" width="170" height="42" rx="10" class="input"/><text x="90" y="205" class="muted small">From date</text>
+  <rect x="260" y="178" width="170" height="42" rx="10" class="input"/><text x="278" y="205" class="muted small">To date</text>
+  <rect x="448" y="178" width="170" height="42" rx="10" class="input"/><text x="466" y="205" class="muted small">Meal type</text>
+  <rect x="636" y="178" width="300" height="42" rx="10" class="input"/><text x="654" y="205" class="muted small">Search descriptions/tags</text>
+  <rect x="48" y="268" width="1104" height="410" rx="16" class="card"/>
+  <text x="72" y="310" class="h2">Meals</text><text x="950" y="310" class="muted small">9 demo rows</text>
+  <g transform="translate(72,340)">
+    <rect width="1032" height="46" rx="8" class="pill"/><text x="18" y="30" class="muted small">Date</text><text x="170" y="30" class="muted small">Type</text><text x="330" y="30" class="muted small">Description</text><text x="760" y="30" class="muted small">Tags</text><text x="930" y="30" class="muted small">kcal</text>
+    <g transform="translate(0,58)"><rect width="1032" height="52" rx="8" class="row"/><text x="18" y="33" class="small">2026-04-24</text><text x="170" y="33" class="small">Drink</text><text x="330" y="33" class="small">Protein smoothie</text><text x="760" y="33" class="muted small">demo, drink</text><text x="940" y="33" class="small">290</text></g>
+    <g transform="translate(0,122)"><rect width="1032" height="52" rx="8" class="row"/><text x="18" y="33" class="small">2026-04-23</text><text x="170" y="33" class="small">Dinner</text><text x="330" y="33" class="small">Pasta primavera</text><text x="760" y="33" class="muted small">demo, dinner</text><text x="940" y="33" class="small">760</text></g>
+    <g transform="translate(0,186)"><rect width="1032" height="52" rx="8" class="row"/><text x="18" y="33" class="small">2026-04-22</text><text x="170" y="33" class="small">Lunch</text><text x="330" y="33" class="small">Tuna bowl</text><text x="760" y="33" class="muted small">demo, lunch</text><text x="940" y="33" class="small">610</text></g>
+    <g transform="translate(0,250)"><rect width="1032" height="52" rx="8" class="row"/><text x="18" y="33" class="small">2026-04-22</text><text x="170" y="33" class="small">Breakfast</text><text x="330" y="33" class="small">Omelette and toast</text><text x="760" y="33" class="muted small">demo</text><text x="940" y="33" class="small">480</text></g>
+  </g>
+  <text x="72" y="720" class="muted small">Synthetic demo data only; no real user entries are shown.</text>
+</svg>
