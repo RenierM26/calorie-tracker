@@ -40,8 +40,8 @@ jobs:
         run: |
           tag='${{ steps.version.outputs.tag }}'
           if git rev-parse "$tag" >/dev/null 2>&1; then
-            echo "Tag $tag already exists" >&2
-            exit 1
+            echo "Tag $tag already exists; reusing it for image publish"
+            exit 0
           fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
@@ -81,6 +81,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -104,6 +105,12 @@ jobs:
           - ghcr.io/${{ github.repository }}:sha-$short_sha
           EOF
 
-          gh release create "$tag" \
-            --title "$tag" \
-            --notes-file release-notes.md
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release edit "$tag" \
+              --title "$tag" \
+              --notes-file release-notes.md
+          else
+            gh release create "$tag" \
+              --title "$tag" \
+              --notes-file release-notes.md
+          fi
