@@ -52,9 +52,14 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=ref,event=branch
-            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix=sha-
             type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=Calorie Tracker
+            org.opencontainers.image.description=Shared calorie and weight tracker with Express, SQLite, and an assistant-friendly API
+            org.opencontainers.image.vendor=RenierM26
 
       - name: Build container image
         uses: docker/build-push-action@v7
