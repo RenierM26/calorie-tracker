@@ -39,9 +39,9 @@ services:
     container_name: calorie-tracker
     restart: unless-stopped
     ports:
-      - "8092:8080"
+      - '8092:8080'
     environment:
-      PORT: "8080"
+      PORT: '8080'
       DATA_DIR: /app/data
       # Optional: require x-api-token on write endpoints
       # API_TOKEN: change-me
@@ -67,7 +67,7 @@ curl http://localhost:8092/api/health
 Expected response:
 
 ```json
-{"ok":true}
+{ "ok": true }
 ```
 
 ## Reverse proxy notes
@@ -83,9 +83,9 @@ services:
     container_name: calorie-tracker
     restart: unless-stopped
     ports:
-      - "8092:8080"
+      - '8092:8080'
     environment:
-      PORT: "8080"
+      PORT: '8080'
       DATA_DIR: /app/data
     volumes:
       - calorie_tracker_data:/app/data
