@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "export": "node scripts/export-data.mjs"
+    "export": "node scripts/export-data.mjs",
+    "import": "node scripts/import-data.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

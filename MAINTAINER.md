@@ -81,6 +81,7 @@ On startup, backend runs `CREATE TABLE IF NOT EXISTS` and adds missing `meals.ta
 ### Export
 
 - `GET /api/export` → JSON export with `exportedAt`, `schemaVersion`, `meals`, and `weights`
+- `POST /api/import` → dry-run/merge/replace import from export JSON
 
 ### Meals
 
