@@ -176,7 +176,7 @@ app.post('/api/log', requireToken, (req, res) => {
   return res.status(400).json({ error: 'Unknown kind. Use meal|weight.' });
 });
 
-app.get('*', (_req, res) => {
+app.use((_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
