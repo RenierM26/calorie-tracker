@@ -153,7 +153,7 @@ Use the **Release** workflow to create a version tag from the current `main` bra
 1. Open **Actions → Release → Run workflow**.
 2. Enter a semver version like `2.0.1`.
 3. The workflow creates and pushes tag `v2.0.1`.
-4. The Release workflow creates the tag and publishes versioned GHCR tags directly.
+4. The Release workflow creates the tag, publishes versioned GHCR tags directly, and creates a GitHub Release with image references.
 
 The Release workflow publishes these image tags:
 

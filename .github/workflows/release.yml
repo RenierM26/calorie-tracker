@@ -83,3 +83,27 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          tag='${{ steps.version.outputs.tag }}'
+          version='${{ steps.version.outputs.version }}'
+          major_minor='${{ steps.version.outputs.major_minor }}'
+          short_sha="${GITHUB_SHA::7}"
+
+          cat > release-notes.md <<EOF
+          Release $tag
+
+          Container images:
+          - ghcr.io/${{ github.repository }}:$tag
+          - ghcr.io/${{ github.repository }}:$version
+          - ghcr.io/${{ github.repository }}:$major_minor
+          - ghcr.io/${{ github.repository }}:sha-$short_sha
+          EOF
+
+          gh release create "$tag" \
+            --title "$tag" \
+            --notes-file release-notes.md
