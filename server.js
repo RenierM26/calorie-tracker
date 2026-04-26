@@ -15,6 +15,7 @@ const API_TOKEN = process.env.API_TOKEN || '';
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 const db = new DatabaseSync(DB_PATH);
+db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS meals (
@@ -56,6 +57,26 @@ function requireToken(req, res, next) {
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
+});
+
+
+app.get('/api/export', (_req, res) => {
+  const meals = db.prepare(`
+    SELECT id, date, time, type, description, tags, kg, calories, created_at as createdAt
+    FROM meals
+    ORDER BY date ASC, COALESCE(time, '') ASC, created_at ASC
+  `).all();
+  const weights = db.prepare(`
+    SELECT id, date, value, created_at as createdAt, updated_at as updatedAt
+    FROM weights
+    ORDER BY date ASC
+  `).all();
+  res.json({
+    exportedAt: new Date().toISOString(),
+    schemaVersion: 1,
+    meals,
+    weights,
+  });
 });
 
 app.get('/api/meals', (req, res) => {
@@ -180,7 +201,24 @@ app.use((_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Calorie tracker running on :${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 });
+
+function shutdown(signal) {
+  console.log(`${signal} received, shutting down`);
+  server.close(() => {
+    db.close();
+    process.exit(0);
+  });
+
+  setTimeout(() => {
+    console.error('Forced shutdown after timeout');
+    process.exit(1);
+  }, 10_000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+

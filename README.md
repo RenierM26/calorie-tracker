@@ -81,6 +81,19 @@ ghcr.io/<owner>/<repo>:latest
 
 If the repository name contains uppercase letters, rename it or adjust the workflow image name to lowercase before first publish; GHCR image names must be lowercase.
 
+
+## Backup and restore
+
+The important state is the SQLite database in the Docker volume mounted at `/app/data`. For home deployments, back this volume up before upgrades and on a regular schedule.
+
+Simple export check:
+
+```bash
+curl http://localhost:8092/api/export > calorie-tracker-export.json
+```
+
+For a full database backup, stop the container or use SQLite-aware backup tooling, then copy `tracker.db` from the data volume.
+
 ## Optional API auth
 
 Set `API_TOKEN` to require `x-api-token` on write endpoints:
@@ -99,6 +112,7 @@ Protected routes:
 ## API endpoints
 
 - `GET /api/health`
+- `GET /api/export`
 - `GET /api/meals?limit=2000`
 - `POST /api/meals`
 - `PUT /api/meals/:id`
