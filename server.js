@@ -13,8 +13,15 @@ const PORT = process.env.PORT || 8080;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DB_PATH = process.env.DB_PATH || path.join(DATA_DIR, 'tracker.db');
 const API_TOKEN = process.env.API_TOKEN || '';
+const FIFTEEN_MINUTES = 15 * 60 * 1000;
+const apiLimiter = rateLimit({
+  windowMs: FIFTEEN_MINUTES,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 const spaFallbackLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: FIFTEEN_MINUTES,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
@@ -53,6 +60,7 @@ if (!mealCols.some((c) => c.name === 'tags')) {
 }
 
 app.use(express.json());
+app.use('/api', apiLimiter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 function requireToken(req, res, next) {
