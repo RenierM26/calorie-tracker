@@ -130,3 +130,64 @@ test('weight upsert and assistant log endpoint work', async () => {
     await stopServer(ctx);
   }
 });
+
+test('import endpoint dry-runs and replaces exported data', async () => {
+  const ctx = await startServer();
+  try {
+    const exportData = {
+      schemaVersion: 1,
+      meals: [
+        {
+          id: 'meal-import-1',
+          date: '2026-01-03',
+          time: '12:15',
+          type: 'Lunch',
+          description: 'Soup',
+          tags: 'restore',
+          kg: 0.4,
+          calories: 280,
+          createdAt: '2026-01-03 12:15:00',
+        },
+      ],
+      weights: [
+        {
+          id: 'weight-import-1',
+          date: '2026-01-03',
+          value: 72.1,
+          createdAt: '2026-01-03 07:00:00',
+          updatedAt: null,
+        },
+      ],
+    };
+
+    const unauthorized = await api(ctx.base, '/api/import', {
+      method: 'POST',
+      body: JSON.stringify(exportData),
+    });
+    assert.equal(unauthorized.res.status, 401);
+
+    const dryRun = await api(ctx.base, '/api/import', {
+      method: 'POST',
+      headers: { 'x-api-token': 'test-token' },
+      body: JSON.stringify({ ...exportData, dryRun: true, mode: 'replace' }),
+    });
+    assert.equal(dryRun.res.status, 200);
+    assert.equal(dryRun.body.dryRun, true);
+    assert.deepEqual(dryRun.body.incoming, { meals: 1, weights: 1 });
+
+    const applied = await api(ctx.base, '/api/import', {
+      method: 'POST',
+      headers: { 'x-api-token': 'test-token' },
+      body: JSON.stringify({ ...exportData, dryRun: false, mode: 'replace' }),
+    });
+    assert.equal(applied.res.status, 200);
+    assert.deepEqual(applied.body.imported, { meals: 1, weights: 1 });
+
+    const meals = await api(ctx.base, '/api/meals?limit=10');
+    assert.equal(meals.body[0].id, 'meal-import-1');
+    const weights = await api(ctx.base, '/api/weights?limit=10');
+    assert.equal(weights.body[0].id, 'weight-import-1');
+  } finally {
+    await stopServer(ctx);
+  }
+});

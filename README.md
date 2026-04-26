@@ -107,6 +107,30 @@ CALORIE_TRACKER_EXPORT_PATH=/safe/backups/calorie-tracker.json npm run export
 
 For a full database backup, stop the container or use SQLite-aware backup tooling, then copy `tracker.db` from the data volume.
 
+### Restore from JSON export
+
+Imports are safe by default: the helper performs a dry-run unless `--apply` is provided. The default mode is merge/upsert.
+
+Dry-run an export restore:
+
+```bash
+npm run import -- backups/calorie-tracker-export.json http://localhost:8092
+```
+
+Apply a merge/upsert restore:
+
+```bash
+npm run import -- backups/calorie-tracker-export.json http://localhost:8092 --apply
+```
+
+Replace all existing rows before importing:
+
+```bash
+npm run import -- backups/calorie-tracker-export.json http://localhost:8092 --apply --replace
+```
+
+If `API_TOKEN` is set on the server, pass it with `--token` or `CALORIE_TRACKER_API_TOKEN`.
+
 ## Optional API auth
 
 Set `API_TOKEN` to require `x-api-token` on write endpoints:
@@ -128,6 +152,7 @@ Security note: `API_TOKEN` is lightweight API write protection, not a complete u
 
 - `GET /api/health`
 - `GET /api/export`
+- `POST /api/import`
 - `GET /api/meals?limit=2000`
 - `POST /api/meals`
 - `PUT /api/meals/:id`

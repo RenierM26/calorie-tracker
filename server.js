@@ -223,6 +223,116 @@ app.delete('/api/weights/:id', requireToken, (req, res) => {
   res.json({ ok: true });
 });
 
+app.post('/api/import', requireToken, (req, res) => {
+  const { mode = 'merge', dryRun = true, meals = [], weights = [] } = req.body || {};
+  if (!['merge', 'replace'].includes(mode)) {
+    return res.status(400).json({ error: 'mode must be merge or replace' });
+  }
+  if (!Array.isArray(meals) || !Array.isArray(weights)) {
+    return res.status(400).json({ error: 'meals and weights must be arrays' });
+  }
+
+  for (const meal of meals) {
+    if (
+      !meal?.id ||
+      !meal?.date ||
+      !meal?.type ||
+      !Number.isFinite(Number(meal.kg)) ||
+      Number(meal.kg) <= 0 ||
+      !Number.isFinite(Number(meal.calories)) ||
+      Number(meal.calories) < 0
+    ) {
+      return res.status(400).json({ error: `Invalid meal in import: ${meal?.id || 'missing id'}` });
+    }
+  }
+  for (const weight of weights) {
+    if (
+      !weight?.id ||
+      !weight?.date ||
+      !Number.isFinite(Number(weight.value)) ||
+      Number(weight.value) <= 0
+    ) {
+      return res
+        .status(400)
+        .json({ error: `Invalid weight in import: ${weight?.id || 'missing id'}` });
+    }
+  }
+
+  const existingMeals = db.prepare('SELECT COUNT(*) AS count FROM meals').get().count;
+  const existingWeights = db.prepare('SELECT COUNT(*) AS count FROM weights').get().count;
+  if (dryRun) {
+    return res.json({
+      ok: true,
+      dryRun: true,
+      mode,
+      existing: { meals: existingMeals, weights: existingWeights },
+      incoming: { meals: meals.length, weights: weights.length },
+    });
+  }
+
+  try {
+    db.exec('BEGIN');
+    if (mode === 'replace') {
+      db.prepare('DELETE FROM meals').run();
+      db.prepare('DELETE FROM weights').run();
+    }
+
+    const mealStmt = db.prepare(`
+      INSERT INTO meals (id, date, time, type, description, tags, kg, calories, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, datetime('now')))
+      ON CONFLICT(id) DO UPDATE SET
+        date=excluded.date,
+        time=excluded.time,
+        type=excluded.type,
+        description=excluded.description,
+        tags=excluded.tags,
+        kg=excluded.kg,
+        calories=excluded.calories
+    `);
+    const weightStmt = db.prepare(`
+      INSERT INTO weights (id, date, value, created_at, updated_at)
+      VALUES (?, ?, ?, COALESCE(?, datetime('now')), ?)
+      ON CONFLICT(date) DO UPDATE SET
+        id=excluded.id,
+        value=excluded.value,
+        updated_at=COALESCE(excluded.updated_at, datetime('now'))
+    `);
+
+    for (const meal of meals) {
+      mealStmt.run(
+        meal.id,
+        meal.date,
+        meal.time || '',
+        meal.type,
+        meal.description || '',
+        meal.tags || '',
+        Number(meal.kg),
+        Math.round(Number(meal.calories)),
+        meal.createdAt || meal.created_at || null,
+      );
+    }
+    for (const weight of weights) {
+      weightStmt.run(
+        weight.id,
+        weight.date,
+        Number(weight.value),
+        weight.createdAt || weight.created_at || null,
+        weight.updatedAt || weight.updated_at || null,
+      );
+    }
+    db.exec('COMMIT');
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  }
+  res.json({
+    ok: true,
+    dryRun: false,
+    mode,
+    imported: { meals: meals.length, weights: weights.length },
+  });
+});
+
 // Assistant-friendly endpoint for natural logging integrations
 app.post('/api/log', requireToken, (req, res) => {
   const { kind, payload } = req.body || {};
