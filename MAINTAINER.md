@@ -79,6 +79,7 @@ On startup, backend runs `CREATE TABLE IF NOT EXISTS` and adds missing `meals.ta
 - `GET /api/health` → `{ ok: true }`
 
 ### Export
+
 - `GET /api/export` → JSON export with `exportedAt`, `schemaVersion`, `meals`, and `weights`
 
 ### Meals
