@@ -318,6 +318,12 @@
       function fmt(n, d = 1) {
         return Number.isFinite(n) ? Number(n).toFixed(d) : '-';
       }
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>\"']/g, (ch) => {
+          const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' };
+          return entities[ch];
+        });
+      }
       function lastNDates(n) {
         const out = [];
         const d = new Date();
@@ -406,7 +412,7 @@
         $('stats').innerHTML = cards
           .map(
             (c) =>
-              `<div class='stat'><div class='label'>${c[0]}</div><div class='value'>${c[1]}</div></div>`,
+              `<div class='stat'><div class='label'>${escapeHtml(c[0])}</div><div class='value'>${escapeHtml(c[1])}</div></div>`,
           )
           .join('');
       }
@@ -416,14 +422,14 @@
           .slice(0, 20)
           .map(
             (m) =>
-              `<tr><td>${m.date}${m.time ? ` ${m.time}` : ''}</td><td>${m.type}</td><td>${fmt(Number(m.kg), 2)}</td><td>${Math.round(Number(m.calories))}</td><td>${(m.description || '').replace(/</g, '&lt;')}${m.tags ? `<br><small style='color:#a8b2d4'># ${String(m.tags).replace(/</g, '&lt;')}</small>` : ''}</td><td><button data-edit-meal='${m.id}' style='margin-right:6px'>Edit</button><button data-del-meal='${m.id}'>Delete</button></td></tr>`,
+              `<tr><td>${escapeHtml(m.date)}${m.time ? ` ${escapeHtml(m.time)}` : ''}</td><td>${escapeHtml(m.type)}</td><td>${fmt(Number(m.kg), 2)}</td><td>${Math.round(Number(m.calories))}</td><td>${escapeHtml(m.description)}${m.tags ? `<br><small style='color:#a8b2d4'># ${escapeHtml(m.tags)}</small>` : ''}</td><td><button data-edit-meal='${escapeHtml(m.id)}' style='margin-right:6px'>Edit</button><button data-del-meal='${escapeHtml(m.id)}'>Delete</button></td></tr>`,
           )
           .join('');
         $('weightTable').innerHTML = weights
           .slice(0, 20)
           .map(
             (w) =>
-              `<tr><td>${w.date}</td><td>${fmt(Number(w.value), 1)}</td><td><button data-edit-weight='${w.id}' style='margin-right:6px'>Edit</button><button data-del-weight='${w.id}'>Delete</button></td></tr>`,
+              `<tr><td>${escapeHtml(w.date)}</td><td>${fmt(Number(w.value), 1)}</td><td><button data-edit-weight='${escapeHtml(w.id)}' style='margin-right:6px'>Edit</button><button data-del-weight='${escapeHtml(w.id)}'>Delete</button></td></tr>`,
           )
           .join('');
       }

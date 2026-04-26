@@ -136,6 +136,12 @@
         if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
         return s;
       }
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>\"']/g, (ch) => {
+          const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' };
+          return entities[ch];
+        });
+      }
       function downloadCsv(filename, headers, rows) {
         const bom = '\uFEFF';
         const lines = [
@@ -177,12 +183,12 @@
           .map(
             (m) => `
         <tr>
-          <td>${m.date}${m.time ? ' ' + m.time : ''}</td>
-          <td>${m.type}</td>
+          <td>${escapeHtml(m.date)}${m.time ? ' ' + escapeHtml(m.time) : ''}</td>
+          <td>${escapeHtml(m.type)}</td>
           <td>${Number(m.kg).toFixed(2)}</td>
           <td>${Math.round(Number(m.calories))}</td>
-          <td>${(m.description || '').replace(/</g, '&lt;')}${m.tags ? `<br><small class='muted'># ${(m.tags || '').replace(/</g, '&lt;')}</small>` : ''}</td>
-          <td><button data-edit='${m.id}' style='margin-right:6px'>Edit</button><button data-del='${m.id}'>Delete</button></td>
+          <td>${escapeHtml(m.description)}${m.tags ? `<br><small class='muted'># ${escapeHtml(m.tags)}</small>` : ''}</td>
+          <td><button data-edit='${escapeHtml(m.id)}' style='margin-right:6px'>Edit</button><button data-del='${escapeHtml(m.id)}'>Delete</button></td>
         </tr>
       `,
           )
