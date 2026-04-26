@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { DatabaseSync } from 'node:sqlite';
+import rateLimit from 'express-rate-limit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +13,19 @@ const PORT = process.env.PORT || 8080;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DB_PATH = process.env.DB_PATH || path.join(DATA_DIR, 'tracker.db');
 const API_TOKEN = process.env.API_TOKEN || '';
+const FIFTEEN_MINUTES = 15 * 60 * 1000;
+const apiLimiter = rateLimit({
+  windowMs: FIFTEEN_MINUTES,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+const spaFallbackLimiter = rateLimit({
+  windowMs: FIFTEEN_MINUTES,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 const db = new DatabaseSync(DB_PATH);
@@ -46,6 +60,7 @@ if (!mealCols.some((c) => c.name === 'tags')) {
 }
 
 app.use(express.json());
+app.use('/api', apiLimiter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 function requireToken(req, res, next) {
@@ -248,7 +263,7 @@ app.post('/api/log', requireToken, (req, res) => {
   return res.status(400).json({ error: 'Unknown kind. Use meal|weight.' });
 });
 
-app.use((_req, res) => {
+app.use(spaFallbackLimiter, (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

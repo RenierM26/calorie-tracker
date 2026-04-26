@@ -14,7 +14,8 @@
     "export": "node scripts/export-data.mjs"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1"
   },
   "description": "Shared calorie and weight tracker with Express, SQLite, Docker, and an assistant-friendly API.",
   "engines": {
