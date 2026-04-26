@@ -2,6 +2,16 @@
 
 Shared browser-based calorie and weight tracker with an Express API, SQLite persistence, Docker packaging, and an included assistant skill for assistant logging.
 
+## Screenshots
+
+Synthetic demo screenshots are included below; they do not contain real user data.
+
+![Dashboard demo screenshot](docs/screenshots/dashboard.svg)
+
+![Journal demo screenshot](docs/screenshots/journal.svg)
+
+![Assistant logging guide demo screenshot](docs/screenshots/guide.svg)
+
 ## Features
 
 - Shared SQLite-backed meal and weight history

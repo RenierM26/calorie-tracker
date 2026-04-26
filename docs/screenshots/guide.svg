@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="Demo guide page screenshot">
+  <defs><linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#182040"/><stop offset="1" stop-color="#0f1220"/></linearGradient><linearGradient id="card" x1="0" x2="1"><stop stop-color="#171b2e"/><stop offset="1" stop-color="#1e2340"/></linearGradient><style>text{font-family:Inter,system-ui,Arial,sans-serif;fill:#ecf0ff}.muted{fill:#a8b2d4}.small{font-size:18px}.title{font-size:34px;font-weight:700}.h2{font-size:24px;font-weight:700}.card{fill:url(#card);stroke:#2a3055;stroke-width:1.5}.code{fill:#10152d;stroke:#3b4371}.accent{fill:#67d5b5}</style></defs>
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <text x="48" y="60" class="title">Assistant Logging Guide</text><text x="48" y="92" class="muted small">How to log meals and weights through the API</text>
+  <rect x="48" y="126" width="520" height="236" rx="16" class="card"/><text x="78" y="168" class="h2">Meal examples</text>
+  <text x="78" y="212" class="small">“Log breakfast: Greek yogurt, berries, granola.”</text>
+  <text x="78" y="252" class="small">“Add dinner: salmon, rice, vegetables, 720 calories.”</text>
+  <text x="78" y="292" class="small">“Tag that snack as protein and estimate.”</text>
+  <rect x="632" y="126" width="520" height="236" rx="16" class="card"/><text x="662" y="168" class="h2">Weight examples</text>
+  <text x="662" y="212" class="small">“Log today’s weight as 81.8 kg.”</text>
+  <text x="662" y="252" class="small">“Update yesterday’s weight to 82.1 kg.”</text>
+  <text x="662" y="292" class="small">“Show my last seven days of weight entries.”</text>
+  <rect x="48" y="400" width="1104" height="230" rx="16" class="card"/><text x="78" y="442" class="h2">API shape</text>
+  <rect x="78" y="468" width="1010" height="112" rx="12" class="code"/><text x="104" y="505" class="small accent">POST /api/log</text><text x="104" y="542" class="small muted">{ "kind": "meal", "payload": { "type": "Dinner", "calories": 720, ... } }</text>
+  <text x="78" y="680" class="muted small">Screenshot uses synthetic examples only; no real food log or health data is included.</text>
+</svg>
