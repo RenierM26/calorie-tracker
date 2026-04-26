@@ -81,7 +81,6 @@ ghcr.io/<owner>/<repo>:latest
 
 If the repository name contains uppercase letters, rename it or adjust the workflow image name to lowercase before first publish; GHCR image names must be lowercase.
 
-
 ## Backup and restore
 
 The important state is the SQLite database in the Docker volume mounted at `/app/data`. For home deployments, back this volume up before upgrades and on a regular schedule.

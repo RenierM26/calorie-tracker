@@ -59,18 +59,25 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
 });
 
-
 app.get('/api/export', (_req, res) => {
-  const meals = db.prepare(`
+  const meals = db
+    .prepare(
+      `
     SELECT id, date, time, type, description, tags, kg, calories, created_at as createdAt
     FROM meals
     ORDER BY date ASC, COALESCE(time, '') ASC, created_at ASC
-  `).all();
-  const weights = db.prepare(`
+  `,
+    )
+    .all();
+  const weights = db
+    .prepare(
+      `
     SELECT id, date, value, created_at as createdAt, updated_at as updatedAt
     FROM weights
     ORDER BY date ASC
-  `).all();
+  `,
+    )
+    .all();
   res.json({
     exportedAt: new Date().toISOString(),
     schemaVersion: 1,
@@ -265,4 +272,3 @@ function shutdown(signal) {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
-
