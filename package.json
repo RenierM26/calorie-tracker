@@ -14,8 +14,5 @@
   "description": "Shared calorie and weight tracker with Express, SQLite, Docker, and an assistant-friendly API.",
   "engines": {
     "node": ">=22 <25"
-  },
-  "overrides": {
-    "path-to-regexp": "0.1.13"
   }
 }
