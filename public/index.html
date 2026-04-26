@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calorie & Weight Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root { --bg:#0f1220; --card:#171b2e; --card2:#1e2340; --text:#ecf0ff; --muted:#a8b2d4; --a:#67d5b5; --b:#7aa2ff; }
+      * { box-sizing: border-box; }
+      body { margin:0; font-family: Inter, system-ui, Arial, sans-serif; color:var(--text); background:radial-gradient(circle at top,#182040,var(--bg) 60%); }
+      .container{ max-width:1100px; margin:0 auto; padding:20px; }
+      .grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:16px; }
+      .card{ background:linear-gradient(160deg,var(--card),var(--card2)); border:1px solid #2a3055; border-radius:14px; padding:16px; }
+      .span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+      @media (max-width:900px){.span-4,.span-6,.span-8{grid-column:span 12}}
+      label{display:block;margin:8px 0 5px;color:var(--muted);font-size:.9rem}
+      input,select,textarea,button{width:100%;padding:10px;border-radius:10px;border:1px solid #3b4371;background:#10152d;color:var(--text)}
+      .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{cursor:pointer;font-weight:600;border:none}.primary{background:var(--a);color:#081}
+      .secondary{background:var(--b);color:#00163a}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+      .stat{background:#10152d;border:1px solid #2e3560;border-radius:10px;padding:10px}.label{color:var(--muted);font-size:.82rem}.value{font-size:1.2rem;font-weight:700}
+      table{width:100%;border-collapse:collapse;font-size:.9rem} th,td{text-align:left;padding:8px;border-bottom:1px solid #2a3055} th{color:var(--muted)}
+      .scroll{max-height:300px;overflow:auto}.ok{color:#67d5b5}.warn{color:#ffb86b}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Calorie & Weight Tracker</h1>
+      <p id="status" class="warn">Connecting…</p>
+      <div class="grid">
+        <div class="card span-4">
+          <h3>Add Meal</h3>
+          <label>Date</label><input id="mealDate" type="date" />
+          <label>Meal Type</label>
+          <select id="mealType"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option><option>Drink</option></select>
+          <label>Food / Notes</label><textarea id="mealDesc" rows="2"></textarea>
+          <label>Tags (optional, comma-separated)</label><input id="mealTags" type="text" placeholder="starter, dessert, soda" />
+          <div class="row">
+            <div><label>Quantity (kg)</label><input id="mealKg" type="number" step="0.01" min="0" /></div>
+            <div><label>Calories</label><input id="mealCalories" type="number" step="1" min="0" /></div>
+          </div>
+          <label>Time (optional)</label><input id="mealTime" type="time" />
+          <br><button class="btn primary" id="addMealBtn">Save Meal</button>
+        </div>
+
+        <div class="card span-4">
+          <h3>Add Weight</h3>
+          <label>Date</label><input id="weightDate" type="date" />
+          <label>Weight (kg)</label><input id="weightValue" type="number" step="0.1" min="0" />
+          <br><button class="btn secondary" id="addWeightBtn">Save Weight</button>
+        </div>
+
+        <div class="card span-4">
+          <h3>Tools</h3>
+          <p style="color:var(--muted)">Data is shared via SQLite in the container.</p>
+          <button id="refreshBtn" class="btn">Refresh</button>
+          <button id="exportMealsBtn" class="btn" style="margin-top:10px;">Export Meals (Excel CSV)</button>
+          <button id="exportWeightsBtn" class="btn" style="margin-top:10px;">Export Weights (Excel CSV)</button>
+          <a href="/journal.html" style="display:block; margin-top:10px;"><button class="btn" type="button">Open Meal Journal</button></a>
+          <a href="/guide.html" style="display:block; margin-top:10px;"><button class="btn" type="button">Open User Guide</button></a>
+        </div>
+
+        <div class="card span-12">
+          <h3>Date Range</h3>
+          <div class="row">
+            <div>
+              <label>Preset</label>
+              <select id="rangePreset">
+                <option value="7">Last 7 days</option>
+                <option value="14">Last 14 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button id="applyRangeBtn">Apply Range</button>
+            </div>
+          </div>
+          <div class="row">
+            <div><label>Start date</label><input id="rangeStart" type="date" /></div>
+            <div><label>End date</label><input id="rangeEnd" type="date" /></div>
+          </div>
+        </div>
+
+        <div class="card span-12"><h3 id="summaryTitle">Summary (Last 30 days)</h3><div class="stats" id="stats"></div></div>
+        <div class="card span-8"><h3 id="trendTitle">Daily Calories & Weight (Last 30 days)</h3><canvas id="trendChart" height="120"></canvas></div>
+        <div class="card span-4"><h3 id="typeTitle">Calories by Meal Type (Last 30 days)</h3><canvas id="mealTypeChart" height="220"></canvas></div>
+
+        <div class="card span-6"><h3>Recent Meals</h3><div class="scroll"><table><thead><tr><th>Date</th><th>Type</th><th>kg</th><th>kcal</th><th>Food</th><th></th></tr></thead><tbody id="mealsTable"></tbody></table></div></div>
+        <div class="card span-6"><h3>Recent Weights</h3><div class="scroll"><table><thead><tr><th>Date</th><th>Weight (kg)</th><th></th></tr></thead><tbody id="weightTable"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <script>
+      const today = new Date().toISOString().slice(0,10);
+      let meals = [];
+      let weights = [];
+      let trendChart, mealTypeChart;
+      let selectedRange = { mode: 'preset', days: 30, start: null, end: null };
+
+      const $ = (id) => document.getElementById(id);
+      const uid = () => {
+        if (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') return globalThis.crypto.randomUUID();
+        return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      };
+      $('mealDate').value = today; $('weightDate').value = today;
+
+      async function api(path, options={}) {
+        const res = await fetch(path, { headers: { 'Content-Type':'application/json', ...(options.headers||{}) }, ...options });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+      }
+
+      async function loadData() {
+        const [m, w] = await Promise.all([api('/api/meals?limit=2000'), api('/api/weights?limit=2000')]);
+        meals = m; weights = w;
+      }
+
+      function fmt(n, d=1){ return Number.isFinite(n) ? Number(n).toFixed(d) : '-'; }
+      function lastNDates(n){ const out=[]; const d=new Date(); for(let i=n-1;i>=0;i--){const x=new Date(d);x.setDate(d.getDate()-i);out.push(x.toISOString().slice(0,10));} return out; }
+      function csvEscape(v){
+        const s = String(v ?? '');
+        if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+        return s;
+      }
+      function downloadCsv(filename, headers, rows){
+        const bom = '\uFEFF';
+        const lines = [headers.map(csvEscape).join(','), ...rows.map(r => r.map(csvEscape).join(','))];
+        const blob = new Blob([bom + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        URL.revokeObjectURL(url);
+      }
+      function dateRange(start, end){
+        const out = [];
+        const d = new Date(start + 'T00:00:00');
+        const e = new Date(end + 'T00:00:00');
+        if (Number.isNaN(d.getTime()) || Number.isNaN(e.getTime()) || d > e) return out;
+        while (d <= e) {
+          out.push(d.toISOString().slice(0,10));
+          d.setDate(d.getDate() + 1);
+        }
+        return out;
+      }
+      function getSelectedDays(){
+        if (selectedRange.mode === 'custom' && selectedRange.start && selectedRange.end) {
+          return dateRange(selectedRange.start, selectedRange.end);
+        }
+        return lastNDates(selectedRange.days || 30);
+      }
+      function rangeLabel(){
+        if (selectedRange.mode === 'custom' && selectedRange.start && selectedRange.end) {
+          return `${selectedRange.start} to ${selectedRange.end}`;
+        }
+        return `Last ${selectedRange.days || 30} days`;
+      }
+
+      function renderStats(){
+        const days = getSelectedDays();
+        const mRange = meals.filter(x => days.includes(x.date));
+        const caloriesTotal = mRange.reduce((s,x)=>s+Number(x.calories||0),0);
+        const daysCount = Math.max(days.length, 1);
+
+        const wRange = [...weights].filter(w => days.includes(w.date)).sort((a,b)=>a.date.localeCompare(b.date));
+        const latest = wRange.at(-1)?.value;
+        const first = wRange.at(0)?.value;
+        const delta = (latest!=null && first!=null) ? Number(latest)-Number(first) : NaN;
+
+        const cards = [
+          [`Meals (${rangeLabel()})`, mRange.length],
+          [`Calories (${rangeLabel()})`, Math.round(caloriesTotal)],
+          ['Avg Daily Calories', Math.round(caloriesTotal/daysCount)],
+          ['Latest Weight in Range', fmt(Number(latest),1)],
+          ['Weight Change in Range', Number.isFinite(delta)?`${delta>0?'+':''}${fmt(delta,1)} kg`:'-'],
+          ['Total Meals (All Time)', meals.length],
+          ['Weight Logs (All Time)', weights.length],
+          ['Avg Meal Size in Range', mRange.length?`${fmt(mRange.reduce((s,m)=>s+Number(m.kg||0),0)/mRange.length,2)} kg`:'-']
+        ];
+        $('summaryTitle').textContent = `Summary (${rangeLabel()})`;
+        $('stats').innerHTML = cards.map(c=>`<div class='stat'><div class='label'>${c[0]}</div><div class='value'>${c[1]}</div></div>`).join('');
+      }
+
+      function renderTables(){
+        $('mealsTable').innerHTML = meals.slice(0,20).map(m=>`<tr><td>${m.date}${m.time?` ${m.time}`:''}</td><td>${m.type}</td><td>${fmt(Number(m.kg),2)}</td><td>${Math.round(Number(m.calories))}</td><td>${(m.description||'').replace(/</g,'&lt;')}${m.tags ? `<br><small style='color:#a8b2d4'># ${String(m.tags).replace(/</g,'&lt;')}</small>` : ''}</td><td><button data-edit-meal='${m.id}' style='margin-right:6px'>Edit</button><button data-del-meal='${m.id}'>Delete</button></td></tr>`).join('');
+        $('weightTable').innerHTML = weights.slice(0,20).map(w=>`<tr><td>${w.date}</td><td>${fmt(Number(w.value),1)}</td><td><button data-edit-weight='${w.id}' style='margin-right:6px'>Edit</button><button data-del-weight='${w.id}'>Delete</button></td></tr>`).join('');
+      }
+
+      function renderCharts(){
+        const days = getSelectedDays();
+        const calByDay = Object.fromEntries(days.map(d=>[d,0]));
+        meals.forEach(m=>{ if(calByDay[m.date]!=null) calByDay[m.date]+=Number(m.calories||0); });
+        const weightByDay = {}; weights.forEach(w=>{ if(days.includes(w.date)) weightByDay[w.date]=Number(w.value); });
+
+        $('trendTitle').textContent = `Daily Calories & Weight (${rangeLabel()})`;
+        $('typeTitle').textContent = `Calories by Meal Type (${rangeLabel()})`;
+
+        if(trendChart) trendChart.destroy();
+        trendChart = new Chart($('trendChart'), { type:'line', data:{ labels:days.map(d=>d.slice(5)), datasets:[
+          {label:'Calories', data:days.map(d=>Math.round(calByDay[d])), yAxisID:'y', borderColor:'#67d5b5', tension:0.25},
+          {label:'Weight (kg)', data:days.map(d=>weightByDay[d]??null), yAxisID:'y1', borderColor:'#7aa2ff', tension:0.25}
+        ]}, options:{ responsive:true, interaction:{mode:'index',intersect:false}, scales:{ y:{position:'left'}, y1:{position:'right', grid:{drawOnChartArea:false}} } } });
+
+        const t={Breakfast:0,Lunch:0,Dinner:0,Snack:0,Drink:0}; meals.forEach(m=>{ if(days.includes(m.date)) t[m.type]=(t[m.type]||0)+Number(m.calories||0); });
+        if(mealTypeChart) mealTypeChart.destroy();
+        mealTypeChart = new Chart($('mealTypeChart'), { type:'doughnut', data:{ labels:Object.keys(t), datasets:[{ data:Object.values(t), backgroundColor:['#5ad3b4','#7aa2ff','#ffb86b','#ff6f91','#9b8cff'] }] }, options:{plugins:{legend:{position:'bottom'}}} });
+      }
+
+      async function refresh(){
+        try {
+          await loadData();
+          $('status').textContent = 'Connected to shared database';
+          $('status').className = 'ok';
+          renderStats(); renderTables(); renderCharts();
+        } catch (e) {
+          $('status').textContent = 'Connection issue: ' + (e.message || e);
+          $('status').className = 'warn';
+        }
+      }
+
+      $('addMealBtn').onclick = async () => {
+        const payload = {
+          id: uid(),
+          date: $('mealDate').value,
+          time: $('mealTime').value || '',
+          type: $('mealType').value,
+          description: $('mealDesc').value.trim(),
+          tags: $('mealTags').value.trim(),
+          kg: Number($('mealKg').value),
+          calories: Number($('mealCalories').value)
+        };
+        if(!payload.date || !Number.isFinite(payload.kg) || payload.kg<=0 || !Number.isFinite(payload.calories) || payload.calories<0) return alert('Please enter valid meal fields.');
+        await api('/api/meals', { method:'POST', body: JSON.stringify(payload) });
+        $('mealDesc').value=''; $('mealTags').value=''; $('mealKg').value=''; $('mealCalories').value=''; $('mealTime').value='';
+        await refresh();
+      };
+
+      $('addWeightBtn').onclick = async () => {
+        const payload = { id: uid(), date: $('weightDate').value, value: Number($('weightValue').value) };
+        if(!payload.date || !Number.isFinite(payload.value) || payload.value<=0) return alert('Please enter valid weight.');
+        await api('/api/weights', { method:'POST', body: JSON.stringify(payload) });
+        $('weightValue').value='';
+        await refresh();
+      };
+
+      document.addEventListener('click', async (e) => {
+        const mealEditId = e.target?.dataset?.editMeal;
+        const mealDelId = e.target?.dataset?.delMeal;
+        const weightEditId = e.target?.dataset?.editWeight;
+        const weightDelId = e.target?.dataset?.delWeight;
+
+        if (mealEditId) {
+          const meal = meals.find(m => m.id === mealEditId);
+          if (!meal) return;
+          const date = prompt('Meal date (YYYY-MM-DD):', meal.date); if (!date) return;
+          const time = prompt('Time (HH:MM, optional):', meal.time || '') ?? '';
+          const type = prompt('Type (Breakfast/Lunch/Dinner/Snack/Drink):', meal.type); if (!type) return;
+          const description = prompt('Description:', meal.description || '') ?? '';
+          const tags = prompt('Tags (comma-separated):', meal.tags || '') ?? '';
+          const kg = Number(prompt('Quantity in kg:', meal.kg));
+          const calories = Number(prompt('Calories:', meal.calories));
+          if (!Number.isFinite(kg) || kg <= 0 || !Number.isFinite(calories) || calories < 0) return alert('Invalid values.');
+          await api(`/api/meals/${mealEditId}`, { method:'PUT', body: JSON.stringify({ date, time, type, description, tags, kg, calories }) });
+          await refresh();
+          return;
+        }
+
+        if (mealDelId) {
+          if (!confirm('Delete this meal entry?')) return;
+          await api(`/api/meals/${mealDelId}`, { method:'DELETE' });
+          await refresh();
+          return;
+        }
+
+        if (weightEditId) {
+          const w = weights.find(x => x.id === weightEditId);
+          if (!w) return;
+          const date = prompt('Weight date (YYYY-MM-DD):', w.date); if (!date) return;
+          const value = Number(prompt('Weight (kg):', w.value));
+          if (!Number.isFinite(value) || value <= 0) return alert('Invalid weight value.');
+          await api(`/api/weights/${weightEditId}`, { method:'PUT', body: JSON.stringify({ date, value }) });
+          await refresh();
+          return;
+        }
+
+        if (weightDelId) {
+          if (!confirm('Delete this weight entry?')) return;
+          await api(`/api/weights/${weightDelId}`, { method:'DELETE' });
+          await refresh();
+        }
+      });
+
+      function applyRangeFromUI(){
+        const preset = $('rangePreset').value;
+        if (preset === 'custom') {
+          const start = $('rangeStart').value;
+          const end = $('rangeEnd').value;
+          if (!start || !end) return alert('Pick both start and end date for custom range.');
+          if (start > end) return alert('Start date must be before end date.');
+          selectedRange = { mode: 'custom', start, end };
+        } else {
+          const days = Number(preset);
+          selectedRange = { mode: 'preset', days };
+          const d = lastNDates(days);
+          $('rangeStart').value = d[0];
+          $('rangeEnd').value = d[d.length - 1];
+        }
+        renderStats();
+        renderCharts();
+      }
+
+      $('rangePreset').addEventListener('change', () => {
+        if ($('rangePreset').value !== 'custom') applyRangeFromUI();
+      });
+      $('applyRangeBtn').onclick = applyRangeFromUI;
+
+      $('exportMealsBtn').onclick = () => {
+        const rows = [...meals].map(m => [m.id, m.date, m.time || '', m.type, m.description || '', m.tags || '', Number(m.kg), Number(m.calories), m.createdAt || '']);
+        downloadCsv(`meals-${today}.csv`, ['id','date','time','type','description','tags','kg','calories','createdAt'], rows);
+      };
+      $('exportWeightsBtn').onclick = () => {
+        const rows = [...weights].map(w => [w.id, w.date, Number(w.value), w.createdAt || '', w.updatedAt || '']);
+        downloadCsv(`weights-${today}.csv`, ['id','date','valueKg','createdAt','updatedAt'], rows);
+      };
+
+      const d30 = lastNDates(30);
+      $('rangeStart').value = d30[0];
+      $('rangeEnd').value = d30[d30.length - 1];
+
+      $('refreshBtn').onclick = refresh;
+      refresh();
+    </script>
+  </body>
+</html>

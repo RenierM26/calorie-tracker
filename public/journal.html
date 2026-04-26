@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meal Journal</title>
+  <style>
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#0f1220;color:#ecf0ff}
+    .container{max-width:1100px;margin:0 auto;padding:20px}
+    .card{background:#171b2e;border:1px solid #2a3055;border-radius:12px;padding:14px;margin-bottom:14px}
+    .row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    @media (max-width:900px){.row{grid-template-columns:1fr 1fr}}
+    input,select,button{width:100%;padding:10px;border-radius:10px;border:1px solid #3b4371;background:#10152d;color:#ecf0ff}
+    table{width:100%;border-collapse:collapse}th,td{padding:8px;border-bottom:1px solid #2a3055;text-align:left}th{color:#a8b2d4}
+    .muted{color:#a8b2d4}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Meal Journal</h1>
+    <p class="muted">Full meal history by date, with edit/delete.</p>
+
+    <div class="card">
+      <div class="row">
+        <div><label>From</label><input id="fromDate" type="date" /></div>
+        <div><label>To</label><input id="toDate" type="date" /></div>
+        <div><label>Type</label>
+          <select id="typeFilter"><option value="">All</option><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option><option>Drink</option></select>
+        </div>
+        <div><label>Search</label><input id="q" placeholder="food, tags" /></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+        <button id="applyBtn">Apply</button>
+        <button id="clearBtn">Clear</button>
+        <button id="exportFilteredBtn">Export Filtered (Excel CSV)</button>
+        <a href="/" style="display:block;width:220px"><button type="button">Back to Dashboard</button></a>
+        <a href="/guide.html" style="display:block;width:220px"><button type="button">Open User Guide</button></a>
+      </div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Type</th><th>kg</th><th>kcal</th><th>Food / Tags</th><th></th></tr>
+        </thead>
+        <tbody id="journalTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let meals = [];
+    const $ = (id) => document.getElementById(id);
+
+    async function api(path, options={}) {
+      const res = await fetch(path, { headers: { 'Content-Type':'application/json', ...(options.headers||{}) }, ...options });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+
+    async function loadMeals(){
+      meals = await api('/api/meals?limit=5000');
+      render();
+    }
+
+    function csvEscape(v){
+      const s = String(v ?? '');
+      if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    }
+    function downloadCsv(filename, headers, rows){
+      const bom = '\uFEFF';
+      const lines = [headers.map(csvEscape).join(','), ...rows.map(r => r.map(csvEscape).join(','))];
+      const blob = new Blob([bom + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function filteredRows(){
+      const from = $('fromDate').value;
+      const to = $('toDate').value;
+      const type = $('typeFilter').value;
+      const q = $('q').value.trim().toLowerCase();
+
+      let rows = [...meals];
+      if (from) rows = rows.filter(m => m.date >= from);
+      if (to) rows = rows.filter(m => m.date <= to);
+      if (type) rows = rows.filter(m => m.type === type);
+      if (q) rows = rows.filter(m => `${m.description||''} ${m.tags||''}`.toLowerCase().includes(q));
+
+      rows.sort((a,b)=> (b.date + (b.time||'')).localeCompare(a.date + (a.time||'')));
+      return rows;
+    }
+
+    function render(){
+      const rows = filteredRows();
+
+      $('journalTable').innerHTML = rows.map(m => `
+        <tr>
+          <td>${m.date}${m.time ? ' ' + m.time : ''}</td>
+          <td>${m.type}</td>
+          <td>${Number(m.kg).toFixed(2)}</td>
+          <td>${Math.round(Number(m.calories))}</td>
+          <td>${(m.description||'').replace(/</g,'&lt;')}${m.tags ? `<br><small class='muted'># ${(m.tags||'').replace(/</g,'&lt;')}</small>` : ''}</td>
+          <td><button data-edit='${m.id}' style='margin-right:6px'>Edit</button><button data-del='${m.id}'>Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    document.addEventListener('click', async (e) => {
+      const editId = e.target?.dataset?.edit;
+      const delId = e.target?.dataset?.del;
+      if (editId) {
+        const meal = meals.find(m => m.id === editId);
+        if (!meal) return;
+        const date = prompt('Meal date (YYYY-MM-DD):', meal.date); if (!date) return;
+        const time = prompt('Time (HH:MM, optional):', meal.time || '') ?? '';
+        const type = prompt('Type (Breakfast/Lunch/Dinner/Snack/Drink):', meal.type); if (!type) return;
+        const description = prompt('Description:', meal.description || '') ?? '';
+        const tags = prompt('Tags (comma-separated):', meal.tags || '') ?? '';
+        const kg = Number(prompt('Quantity in kg:', meal.kg));
+        const calories = Number(prompt('Calories:', meal.calories));
+        if (!Number.isFinite(kg) || kg <= 0 || !Number.isFinite(calories) || calories < 0) return alert('Invalid values.');
+        await api(`/api/meals/${editId}`, { method:'PUT', body: JSON.stringify({ date, time, type, description, tags, kg, calories }) });
+        await loadMeals();
+      }
+      if (delId) {
+        if (!confirm('Delete this meal entry?')) return;
+        await api(`/api/meals/${delId}`, { method:'DELETE' });
+        await loadMeals();
+      }
+    });
+
+    $('applyBtn').onclick = render;
+    $('clearBtn').onclick = () => { $('fromDate').value=''; $('toDate').value=''; $('typeFilter').value=''; $('q').value=''; render(); };
+    $('exportFilteredBtn').onclick = () => {
+      const rows = filteredRows().map(m => [m.id, m.date, m.time || '', m.type, m.description || '', m.tags || '', Number(m.kg), Number(m.calories), m.createdAt || '']);
+      const stamp = new Date().toISOString().slice(0,10);
+      downloadCsv(`meal-journal-filtered-${stamp}.csv`, ['id','date','time','type','description','tags','kg','calories','createdAt'], rows);
+    };
+
+    loadMeals();
+  </script>
+</body>
+</html>

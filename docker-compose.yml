@@ -1,0 +1,18 @@
+services:
+  calorie-tracker:
+    build: .
+    image: calorie-tracker:local
+    container_name: calorie-tracker
+    ports:
+      - "8092:8080"
+    environment:
+      PORT: 8080
+      DATA_DIR: /app/data
+      # Optional: set API token to require x-api-token on write endpoints.
+      # API_TOKEN: change-me
+    volumes:
+      - calorie_tracker_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  calorie_tracker_data:

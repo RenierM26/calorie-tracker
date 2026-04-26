@@ -1,0 +1,126 @@
+# Calorie & Weight Tracker
+
+Shared browser-based calorie and weight tracker with an Express API, SQLite persistence, Docker packaging, and an included assistant skill for assistant logging.
+
+## Features
+
+- Shared SQLite-backed meal and weight history
+- REST API for meals, weights, edits, deletes, and assistant-friendly logging
+- Dashboard and journal pages served from the same container
+- Optional `API_TOKEN` write protection via `x-api-token`
+- Docker image build workflow for GitHub Actions / GHCR
+- Bundled skill at `skills/calorie-tracker-api/`
+
+## Repository layout
+
+```text
+.
+├─ .github/workflows/container.yml   # CI: check, smoke test, build/publish image
+├─ Dockerfile                        # Production container image
+├─ docker-compose.yml                # Local/self-hosted deployment example
+├─ package.json
+├─ package-lock.json
+├─ server.js                         # Express + SQLite API + static hosting
+├─ public/                           # Browser UI
+├─ scripts/smoke-test.mjs            # API smoke test used by CI
+└─ skills/calorie-tracker-api/        # assistant skill for agent/API usage
+```
+
+## Local development
+
+Requires Node.js 22.x because the backend uses `node:sqlite`.
+
+```bash
+npm ci
+npm run check
+npm run smoke
+npm start
+```
+
+Open: <http://localhost:8080>
+
+By default the database is created at `./data/tracker.db`. Override with `DATA_DIR` or `DB_PATH` if needed.
+
+## Docker build and run
+
+```bash
+docker build -t calorie-tracker:local .
+docker run --rm -p 8092:8080 -v calorie_tracker_data:/app/data calorie-tracker:local
+```
+
+Open: <http://localhost:8092>
+
+Or use Compose:
+
+```bash
+docker compose up -d --build
+```
+
+## GitHub Actions container flow
+
+The included workflow in `.github/workflows/container.yml` does this on pull requests and pushes:
+
+1. Install dependencies with `npm ci`
+2. Run `npm run check`
+3. Run `npm run smoke`
+4. Build the Docker image with Buildx
+5. Publish to GHCR on non-PR pushes
+
+Published image tags include:
+
+- `latest` on the default branch
+- branch tags for branch pushes
+- version tags for `v*.*.*` tags
+- `sha-<commit>` tags for traceability
+
+Expected image path once the repository is on GitHub:
+
+```text
+ghcr.io/<owner>/<repo>:latest
+```
+
+If the repository name contains uppercase letters, rename it or adjust the workflow image name to lowercase before first publish; GHCR image names must be lowercase.
+
+## Optional API auth
+
+Set `API_TOKEN` to require `x-api-token` on write endpoints:
+
+```yaml
+environment:
+  - API_TOKEN=change-me
+```
+
+Protected routes:
+
+- `POST /api/meals`, `PUT /api/meals/:id`, `DELETE /api/meals/:id`
+- `POST /api/weights`, `PUT /api/weights/:id`, `DELETE /api/weights/:id`
+- `POST /api/log`
+
+## API endpoints
+
+- `GET /api/health`
+- `GET /api/meals?limit=2000`
+- `POST /api/meals`
+- `PUT /api/meals/:id`
+- `DELETE /api/meals/:id`
+- `GET /api/weights?limit=2000`
+- `POST /api/weights`
+- `PUT /api/weights/:id`
+- `DELETE /api/weights/:id`
+- `POST /api/log` with `{ "kind": "meal|weight", "payload": { ... } }`
+
+## assistant skill
+
+The repo includes `skills/calorie-tracker-api/SKILL.md`. After cloning/installing the repo where assistant can read it, copy or symlink that skill folder into the assistant skills directory if it is not automatically mounted by your deployment.
+
+## Deployment note for the home reverse proxy route
+
+For the existing `your-tracker.example.com` deployment, keep the container reachable by reverse proxy. If reverse proxy proxies by Docker DNS name, attach the container to the same proxy network used by reverse proxy, for example:
+
+```bash
+docker network connect infra_proxy calorie-tracker 2>/dev/null || true
+```
+
+## License
+
+GPL-3.0, matching the repository license.
