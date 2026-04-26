@@ -41,6 +41,10 @@ Open: <http://localhost:8080>
 
 By default the database is created at `./data/tracker.db`. Override with `DATA_DIR` or `DB_PATH` if needed.
 
+## Deployment guide
+
+For self-hosting, reverse proxy, backup, restore, and update procedures, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Docker build and run
 
 ```bash
