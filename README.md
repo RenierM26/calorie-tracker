@@ -146,6 +146,21 @@ For the existing `your-tracker.example.com` deployment, keep the container reach
 docker network connect infra_proxy calorie-tracker 2>/dev/null || true
 ```
 
+## Releases
+
+Use the **Release** workflow to create a version tag from the current `main` branch:
+
+1. Open **Actions → Release → Run workflow**.
+2. Enter a semver version like `2.0.1`.
+3. The workflow creates and pushes tag `v2.0.1`.
+4. The existing Container workflow builds and publishes GHCR tags for the release.
+
+Recommended deployment tags:
+
+- `ghcr.io/<owner>/<repo>:vX.Y.Z` for stable home deployments
+- `ghcr.io/<owner>/<repo>:sha-<commit>` for exact rollback/debugging
+- `ghcr.io/<owner>/<repo>:latest` only when you intentionally want newest `main`
+
 ## License
 
 GPL-3.0, matching the repository license.
