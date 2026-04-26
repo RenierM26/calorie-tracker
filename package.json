@@ -10,7 +10,8 @@
     "smoke": "node scripts/smoke-test.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "export": "node scripts/export-data.mjs"
   },
   "dependencies": {
     "express": "^5.2.1"

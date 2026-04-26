@@ -6,3 +6,8 @@ data/
 .DS_Store
 npm-debug.log*
 coverage/
+backups/
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
