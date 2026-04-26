@@ -68,10 +68,12 @@ The included workflow in `.github/workflows/container.yml` does this on pull req
 
 Published image tags include:
 
-- `latest` on the default branch
+- `main` for default-branch builds
 - branch tags for branch pushes
 - version tags for `v*.*.*` tags
 - `sha-<commit>` tags for traceability
+
+The manual Release workflow publishes `latest`. In other words, `latest` means latest stable release, while `main` means current main-branch build.
 
 Expected image path once the repository is on GitHub:
 
@@ -120,6 +122,8 @@ Protected routes:
 - `POST /api/weights`, `PUT /api/weights/:id`, `DELETE /api/weights/:id`
 - `POST /api/log`
 
+Security note: `API_TOKEN` is lightweight API write protection, not a complete user login system. For internet-facing or multi-user deployments, add reverse-proxy auth, VPN access, or another trusted access layer in front of the app.
+
 ## API endpoints
 
 - `GET /api/health`
@@ -157,6 +161,7 @@ Use the **Release** workflow to create a version tag from the current `main` bra
 
 The Release workflow publishes these image tags:
 
+- `latest`
 - `vX.Y.Z`
 - `X.Y.Z`
 - `X.Y`
@@ -164,9 +169,10 @@ The Release workflow publishes these image tags:
 
 Recommended deployment tags:
 
-- `ghcr.io/<owner>/<repo>:vX.Y.Z` for stable home deployments
+- `ghcr.io/<owner>/<repo>:latest` for automatic latest stable release updates
+- `ghcr.io/<owner>/<repo>:vX.Y.Z` for pinned stable home deployments
 - `ghcr.io/<owner>/<repo>:sha-<commit>` for exact rollback/debugging
-- `ghcr.io/<owner>/<repo>:latest` only when you intentionally want newest `main`
+- `ghcr.io/<owner>/<repo>:main` only when you intentionally want newest main-branch build
 
 ## License
 
