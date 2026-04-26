@@ -91,6 +91,18 @@ Simple export check:
 curl http://localhost:8092/api/export > calorie-tracker-export.json
 ```
 
+Or use the bundled helper, which writes to `backups/` by default:
+
+```bash
+npm run export -- http://localhost:8092
+```
+
+Override the destination path:
+
+```bash
+CALORIE_TRACKER_EXPORT_PATH=/safe/backups/calorie-tracker.json npm run export
+```
+
 For a full database backup, stop the container or use SQLite-aware backup tooling, then copy `tracker.db` from the data volume.
 
 ## Optional API auth

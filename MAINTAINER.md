@@ -270,7 +270,7 @@ Expect `200` for last command.
 
 ## 10) Backup guidance
 
-Back up the persistent `/app/data` volume, especially `tracker.db`, before upgrades. The read-only `GET /api/export` endpoint is useful for quick human-readable exports, but the SQLite database remains the canonical backup target.
+Back up the persistent `/app/data` volume, especially `tracker.db`, before upgrades. The read-only `GET /api/export` endpoint is useful for quick human-readable exports, and `scripts/export-data.mjs` wraps that endpoint for scheduled file exports. The SQLite database remains the canonical backup target for full-fidelity restore.
 
 ## 11) Change discipline
 
