@@ -158,6 +158,22 @@ On Docker hosts, the volume path is platform-specific. Inspect it with:
 docker volume inspect calorie_tracker_data
 ```
 
+## Demo data
+
+The repository includes a synthetic demo export at [`examples/demo-export.json`](examples/demo-export.json). Use it for local testing, screenshots, and import/restore walkthroughs. Do not use real exports in public examples.
+
+Dry-run against a local deployment:
+
+```bash
+npm run import -- examples/demo-export.json http://localhost:8092
+```
+
+Apply to a disposable/local deployment:
+
+```bash
+npm run import -- examples/demo-export.json http://localhost:8092 --apply
+```
+
 ## Restore from JSON export
 
 Imports are safe by default: dry-run unless `--apply` is provided.
