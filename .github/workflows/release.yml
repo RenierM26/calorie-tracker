@@ -67,6 +67,7 @@ jobs:
             type=raw,value=${{ steps.version.outputs.version }}
             type=raw,value=${{ steps.version.outputs.major_minor }}
             type=raw,value=${{ steps.version.outputs.tag }}
+            type=raw,value=latest
             type=sha,prefix=sha-
           labels: |
             org.opencontainers.image.title=Calorie Tracker
@@ -102,6 +103,7 @@ jobs:
           - ghcr.io/${{ github.repository }}:$tag
           - ghcr.io/${{ github.repository }}:$version
           - ghcr.io/${{ github.repository }}:$major_minor
+          - ghcr.io/${{ github.repository }}:latest
           - ghcr.io/${{ github.repository }}:sha-$short_sha
           EOF
 
