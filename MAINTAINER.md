@@ -78,6 +78,9 @@ On startup, backend runs `CREATE TABLE IF NOT EXISTS` and adds missing `meals.ta
 
 - `GET /api/health` → `{ ok: true }`
 
+### Export
+- `GET /api/export` → JSON export with `exportedAt`, `schemaVersion`, `meals`, and `weights`
+
 ### Meals
 
 - `GET /api/meals?limit=2000`
@@ -264,7 +267,11 @@ Expect `200` for last command.
 
 ---
 
-## 10) Change discipline
+## 10) Backup guidance
+
+Back up the persistent `/app/data` volume, especially `tracker.db`, before upgrades. The read-only `GET /api/export` endpoint is useful for quick human-readable exports, but the SQLite database remains the canonical backup target.
+
+## 11) Change discipline
 
 When editing features:
 
