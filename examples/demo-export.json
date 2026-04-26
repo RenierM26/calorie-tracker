@@ -1,0 +1,142 @@
+{
+  "exportedAt": "2026-04-24T12:00:00.000Z",
+  "schemaVersion": 1,
+  "meals": [
+    {
+      "id": "demo-meal-001",
+      "date": "2026-04-20",
+      "time": "07:30",
+      "type": "Breakfast",
+      "description": "Greek yogurt, berries, granola",
+      "tags": "demo,breakfast",
+      "kg": 0.32,
+      "calories": 410,
+      "createdAt": "2026-04-20 07:30:00"
+    },
+    {
+      "id": "demo-meal-002",
+      "date": "2026-04-20",
+      "time": "12:10",
+      "type": "Lunch",
+      "description": "Chicken salad wrap",
+      "tags": "demo,lunch",
+      "kg": 0.45,
+      "calories": 560,
+      "createdAt": "2026-04-20 12:10:00"
+    },
+    {
+      "id": "demo-meal-003",
+      "date": "2026-04-20",
+      "time": "18:40",
+      "type": "Dinner",
+      "description": "Salmon, rice, vegetables",
+      "tags": "demo,dinner",
+      "kg": 0.62,
+      "calories": 720,
+      "createdAt": "2026-04-20 18:40:00"
+    },
+    {
+      "id": "demo-meal-004",
+      "date": "2026-04-21",
+      "time": "10:15",
+      "type": "Snack",
+      "description": "Apple and peanut butter",
+      "tags": "demo,snack",
+      "kg": 0.18,
+      "calories": 210,
+      "createdAt": "2026-04-21 10:15:00"
+    },
+    {
+      "id": "demo-meal-005",
+      "date": "2026-04-21",
+      "time": "19:05",
+      "type": "Dinner",
+      "description": "Lentil curry with naan",
+      "tags": "demo,dinner",
+      "kg": 0.55,
+      "calories": 680,
+      "createdAt": "2026-04-21 19:05:00"
+    },
+    {
+      "id": "demo-meal-006",
+      "date": "2026-04-22",
+      "time": "08:00",
+      "type": "Breakfast",
+      "description": "Omelette and toast",
+      "tags": "demo,breakfast",
+      "kg": 0.36,
+      "calories": 480,
+      "createdAt": "2026-04-22 08:00:00"
+    },
+    {
+      "id": "demo-meal-007",
+      "date": "2026-04-22",
+      "time": "13:00",
+      "type": "Lunch",
+      "description": "Tuna bowl",
+      "tags": "demo,lunch",
+      "kg": 0.5,
+      "calories": 610,
+      "createdAt": "2026-04-22 13:00:00"
+    },
+    {
+      "id": "demo-meal-008",
+      "date": "2026-04-23",
+      "time": "18:30",
+      "type": "Dinner",
+      "description": "Pasta primavera",
+      "tags": "demo,dinner",
+      "kg": 0.58,
+      "calories": 760,
+      "createdAt": "2026-04-23 18:30:00"
+    },
+    {
+      "id": "demo-meal-009",
+      "date": "2026-04-24",
+      "time": "16:00",
+      "type": "Drink",
+      "description": "Protein smoothie",
+      "tags": "demo,drink",
+      "kg": 0.35,
+      "calories": 290,
+      "createdAt": "2026-04-24 16:00:00"
+    }
+  ],
+  "weights": [
+    {
+      "id": "demo-weight-001",
+      "date": "2026-04-20",
+      "value": 82.4,
+      "createdAt": "2026-04-20 07:00:00",
+      "updatedAt": null
+    },
+    {
+      "id": "demo-weight-002",
+      "date": "2026-04-21",
+      "value": 82.2,
+      "createdAt": "2026-04-21 07:00:00",
+      "updatedAt": null
+    },
+    {
+      "id": "demo-weight-003",
+      "date": "2026-04-22",
+      "value": 82.1,
+      "createdAt": "2026-04-22 07:00:00",
+      "updatedAt": null
+    },
+    {
+      "id": "demo-weight-004",
+      "date": "2026-04-23",
+      "value": 81.9,
+      "createdAt": "2026-04-23 07:00:00",
+      "updatedAt": null
+    },
+    {
+      "id": "demo-weight-005",
+      "date": "2026-04-24",
+      "value": 81.8,
+      "createdAt": "2026-04-24 07:00:00",
+      "updatedAt": null
+    }
+  ]
+}

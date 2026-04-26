@@ -36,6 +36,22 @@ Synthetic demo screenshots are included below; they do not contain real user dat
 └─ skills/calorie-tracker-api/        # assistant skill for agent/API usage
 ```
 
+## Demo data
+
+A synthetic demo export is available at [`examples/demo-export.json`](examples/demo-export.json). It is safe to use for screenshots, local testing, and import/restore demos; it contains no real user data.
+
+Dry-run import into a local server:
+
+```bash
+npm run import -- examples/demo-export.json http://localhost:8080
+```
+
+Apply it to a disposable local database:
+
+```bash
+npm run import -- examples/demo-export.json http://localhost:8080 --apply
+```
+
 ## Local development
 
 Requires Node.js 22.x because the backend uses `node:sqlite`.
