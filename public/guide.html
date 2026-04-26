@@ -1,101 +1,143 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calorie Tracker Guide</title>
-  <style>
-    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#0f1220;color:#ecf0ff}
-    .container{max-width:900px;margin:0 auto;padding:20px}
-    .card{background:#171b2e;border:1px solid #2a3055;border-radius:12px;padding:16px;margin-bottom:14px}
-    h1,h2{margin:0 0 10px}
-    p,li{color:#d6ddf7;line-height:1.45}
-    a{color:#9bc1ff}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    button{padding:10px 14px;border-radius:10px;border:1px solid #3b4371;background:#10152d;color:#ecf0ff;cursor:pointer}
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Calorie & Weight Tracker — Quick Guide</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calorie Tracker Guide</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, Arial, sans-serif;
+        background: #0f1220;
+        color: #ecf0ff;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: #171b2e;
+        border: 1px solid #2a3055;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      h1,
+      h2 {
+        margin: 0 0 10px;
+      }
+      p,
+      li {
+        color: #d6ddf7;
+        line-height: 1.45;
+      }
+      a {
+        color: #9bc1ff;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #3b4371;
+        background: #10152d;
+        color: #ecf0ff;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Calorie & Weight Tracker — Quick Guide</h1>
 
-    <div class="card">
-      <h2>What this app does</h2>
-      <ul>
-        <li>Log meals with type, quantity (kg), calories, notes, and tags</li>
-        <li>Log weight daily</li>
-        <li>Show trends and graphs over selectable date ranges</li>
-        <li>View and edit full meal history in the Journal page</li>
-      </ul>
-    </div>
+      <div class="card">
+        <h2>What this app does</h2>
+        <ul>
+          <li>Log meals with type, quantity (kg), calories, notes, and tags</li>
+          <li>Log weight daily</li>
+          <li>Show trends and graphs over selectable date ranges</li>
+          <li>View and edit full meal history in the Journal page</li>
+        </ul>
+      </div>
 
-    <div class="card">
-      <h2>How to log meals</h2>
-      <ol>
-        <li>Open the dashboard</li>
-        <li>Fill date, type, food notes, kg, and calories</li>
-        <li>Optionally add tags (e.g. <em>starter, dessert, soda</em>)</li>
-        <li>Click <strong>Save Meal</strong></li>
-      </ol>
-      <p>You can log multiple entries for the same meal (starter/main/dessert/drinks).</p>
-    </div>
+      <div class="card">
+        <h2>How to log meals</h2>
+        <ol>
+          <li>Open the dashboard</li>
+          <li>Fill date, type, food notes, kg, and calories</li>
+          <li>Optionally add tags (e.g. <em>starter, dessert, soda</em>)</li>
+          <li>Click <strong>Save Meal</strong></li>
+        </ol>
+        <p>You can log multiple entries for the same meal (starter/main/dessert/drinks).</p>
+      </div>
 
-    <div class="card">
-      <h2>How to log weight</h2>
-      <ol>
-        <li>Set date</li>
-        <li>Enter weight in kg</li>
-        <li>Click <strong>Save Weight</strong></li>
-      </ol>
-      <p>Tip: log once daily at a similar time for better trend consistency.</p>
-    </div>
+      <div class="card">
+        <h2>How to log weight</h2>
+        <ol>
+          <li>Set date</li>
+          <li>Enter weight in kg</li>
+          <li>Click <strong>Save Weight</strong></li>
+        </ol>
+        <p>Tip: log once daily at a similar time for better trend consistency.</p>
+      </div>
 
-    <div class="card">
-      <h2>Using date ranges</h2>
-      <ul>
-        <li>Choose presets: 7, 14, 30, or 90 days</li>
-        <li>Or choose a custom start and end date</li>
-        <li>Click <strong>Apply Range</strong> to update summary + charts</li>
-      </ul>
-    </div>
+      <div class="card">
+        <h2>Using date ranges</h2>
+        <ul>
+          <li>Choose presets: 7, 14, 30, or 90 days</li>
+          <li>Or choose a custom start and end date</li>
+          <li>Click <strong>Apply Range</strong> to update summary + charts</li>
+        </ul>
+      </div>
 
-    <div class="card">
-      <h2>Meal Journal page</h2>
-      <p>Use the Journal page to review all meals by date and filter by:</p>
-      <ul>
-        <li>From/To dates</li>
-        <li>Meal type</li>
-        <li>Search text (food notes or tags)</li>
-      </ul>
-      <p>Meals can be edited or deleted directly from Journal.</p>
-    </div>
+      <div class="card">
+        <h2>Meal Journal page</h2>
+        <p>Use the Journal page to review all meals by date and filter by:</p>
+        <ul>
+          <li>From/To dates</li>
+          <li>Meal type</li>
+          <li>Search text (food notes or tags)</li>
+        </ul>
+        <p>Meals can be edited or deleted directly from Journal.</p>
+      </div>
 
-    <div class="card">
-      <h2>Editing and deleting</h2>
-      <ul>
-        <li>From dashboard: recent items have <strong>Edit</strong> and <strong>Delete</strong></li>
-        <li>From journal: every meal row has <strong>Edit</strong> and <strong>Delete</strong></li>
-      </ul>
-      <p>Delete is permanent.</p>
-    </div>
+      <div class="card">
+        <h2>Editing and deleting</h2>
+        <ul>
+          <li>
+            From dashboard: recent items have <strong>Edit</strong> and <strong>Delete</strong>
+          </li>
+          <li>
+            From journal: every meal row has <strong>Edit</strong> and <strong>Delete</strong>
+          </li>
+        </ul>
+        <p>Delete is permanent.</p>
+      </div>
 
-    <div class="card">
-      <h2>Export to Excel</h2>
-      <ul>
-        <li>On Dashboard: export <strong>Meals</strong> and <strong>Weights</strong> as Excel-friendly CSV files</li>
-        <li>On Journal: export the <strong>currently filtered list</strong> as CSV</li>
-      </ul>
-      <p>Open CSV files directly in Excel for analysis and custom charts.</p>
-    </div>
+      <div class="card">
+        <h2>Export to Excel</h2>
+        <ul>
+          <li>
+            On Dashboard: export <strong>Meals</strong> and <strong>Weights</strong> as
+            Excel-friendly CSV files
+          </li>
+          <li>On Journal: export the <strong>currently filtered list</strong> as CSV</li>
+        </ul>
+        <p>Open CSV files directly in Excel for analysis and custom charts.</p>
+      </div>
 
-    <div class="card">
-      <h2>Need help?</h2>
-      <p>If something looks wrong, refresh the page once and try again.</p>
-      <div class="row">
-        <a href="/"><button>Back to Dashboard</button></a>
-        <a href="/journal.html"><button>Open Meal Journal</button></a>
+      <div class="card">
+        <h2>Need help?</h2>
+        <p>If something looks wrong, refresh the page once and try again.</p>
+        <div class="row">
+          <a href="/"><button>Back to Dashboard</button></a>
+          <a href="/journal.html"><button>Open Meal Journal</button></a>
+        </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

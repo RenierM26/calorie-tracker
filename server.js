@@ -39,9 +39,9 @@ CREATE INDEX IF NOT EXISTS idx_meals_date ON meals(date);
 CREATE INDEX IF NOT EXISTS idx_weights_date ON weights(date);
 `);
 
-const mealCols = db.prepare("PRAGMA table_info(meals)").all();
-if (!mealCols.some(c => c.name === 'tags')) {
-  db.exec("ALTER TABLE meals ADD COLUMN tags TEXT");
+const mealCols = db.prepare('PRAGMA table_info(meals)').all();
+if (!mealCols.some((c) => c.name === 'tags')) {
+  db.exec('ALTER TABLE meals ADD COLUMN tags TEXT');
 }
 
 app.use(express.json());
@@ -60,25 +60,39 @@ app.get('/api/health', (_req, res) => {
 
 app.get('/api/meals', (req, res) => {
   const limit = Math.min(Number(req.query.limit) || 200, 1000);
-  const rows = db.prepare(`
+  const rows = db
+    .prepare(
+      `
     SELECT id, date, time, type, description, tags, kg, calories, created_at as createdAt
     FROM meals
     ORDER BY date DESC, COALESCE(time, '') DESC, created_at DESC
     LIMIT ?
-  `).all(limit);
+  `,
+    )
+    .all(limit);
   res.json(rows);
 });
 
 app.post('/api/meals', requireToken, (req, res) => {
   const { id, date, time = '', type, description = '', kg, calories, tags = '' } = req.body || {};
-  if (!id || !date || !type || !Number.isFinite(Number(kg)) || Number(kg) <= 0 || !Number.isFinite(Number(calories)) || Number(calories) < 0) {
+  if (
+    !id ||
+    !date ||
+    !type ||
+    !Number.isFinite(Number(kg)) ||
+    Number(kg) <= 0 ||
+    !Number.isFinite(Number(calories)) ||
+    Number(calories) < 0
+  ) {
     return res.status(400).json({ error: 'Invalid meal payload' });
   }
 
-  db.prepare(`
+  db.prepare(
+    `
     INSERT INTO meals (id, date, time, type, description, tags, kg, calories)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, date, time, type, description, tags, Number(kg), Math.round(Number(calories)));
+  `,
+  ).run(id, date, time, type, description, tags, Number(kg), Math.round(Number(calories)));
 
   res.json({ ok: true });
 });
@@ -86,12 +100,23 @@ app.post('/api/meals', requireToken, (req, res) => {
 app.put('/api/meals/:id', requireToken, (req, res) => {
   const { id } = req.params;
   const { date, time = '', type, description = '', tags = '', kg, calories } = req.body || {};
-  if (!date || !type || !Number.isFinite(Number(kg)) || Number(kg) <= 0 || !Number.isFinite(Number(calories)) || Number(calories) < 0) {
+  if (
+    !date ||
+    !type ||
+    !Number.isFinite(Number(kg)) ||
+    Number(kg) <= 0 ||
+    !Number.isFinite(Number(calories)) ||
+    Number(calories) < 0
+  ) {
     return res.status(400).json({ error: 'Invalid meal payload' });
   }
-  const r = db.prepare(`
+  const r = db
+    .prepare(
+      `
     UPDATE meals SET date=?, time=?, type=?, description=?, tags=?, kg=?, calories=? WHERE id=?
-  `).run(date, time, type, description, tags, Number(kg), Math.round(Number(calories)), id);
+  `,
+    )
+    .run(date, time, type, description, tags, Number(kg), Math.round(Number(calories)), id);
   if (r.changes === 0) return res.status(404).json({ error: 'Meal not found' });
   res.json({ ok: true });
 });
@@ -105,12 +130,16 @@ app.delete('/api/meals/:id', requireToken, (req, res) => {
 
 app.get('/api/weights', (req, res) => {
   const limit = Math.min(Number(req.query.limit) || 400, 2000);
-  const rows = db.prepare(`
+  const rows = db
+    .prepare(
+      `
     SELECT id, date, value, created_at as createdAt, updated_at as updatedAt
     FROM weights
     ORDER BY date DESC
     LIMIT ?
-  `).all(limit);
+  `,
+    )
+    .all(limit);
   res.json(rows);
 });
 
@@ -120,11 +149,13 @@ app.post('/api/weights', requireToken, (req, res) => {
     return res.status(400).json({ error: 'Invalid weight payload' });
   }
 
-  db.prepare(`
+  db.prepare(
+    `
     INSERT INTO weights (id, date, value)
     VALUES (?, ?, ?)
     ON CONFLICT(date) DO UPDATE SET value=excluded.value, updated_at=datetime('now')
-  `).run(id, date, Number(value));
+  `,
+  ).run(id, date, Number(value));
 
   res.json({ ok: true });
 });
@@ -135,7 +166,9 @@ app.put('/api/weights/:id', requireToken, (req, res) => {
   if (!date || !Number.isFinite(Number(value)) || Number(value) <= 0) {
     return res.status(400).json({ error: 'Invalid weight payload' });
   }
-  const r = db.prepare(`UPDATE weights SET date=?, value=?, updated_at=datetime('now') WHERE id=?`).run(date, Number(value), id);
+  const r = db
+    .prepare(`UPDATE weights SET date=?, value=?, updated_at=datetime('now') WHERE id=?`)
+    .run(date, Number(value), id);
   if (r.changes === 0) return res.status(404).json({ error: 'Weight not found' });
   res.json({ ok: true });
 });
@@ -152,11 +185,20 @@ app.post('/api/log', requireToken, (req, res) => {
   const { kind, payload } = req.body || {};
   if (kind === 'meal') {
     const { id, date, time = '', type, description = '', tags = '', kg, calories } = payload || {};
-    if (!id || !date || !type || !Number.isFinite(Number(kg)) || Number(kg) <= 0 || !Number.isFinite(Number(calories)) || Number(calories) < 0) {
+    if (
+      !id ||
+      !date ||
+      !type ||
+      !Number.isFinite(Number(kg)) ||
+      Number(kg) <= 0 ||
+      !Number.isFinite(Number(calories)) ||
+      Number(calories) < 0
+    ) {
       return res.status(400).json({ error: 'Invalid meal payload' });
     }
-    db.prepare(`INSERT INTO meals (id, date, time, type, description, tags, kg, calories) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
-      .run(id, date, time, type, description, tags, Number(kg), Math.round(Number(calories)));
+    db.prepare(
+      `INSERT INTO meals (id, date, time, type, description, tags, kg, calories) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).run(id, date, time, type, description, tags, Number(kg), Math.round(Number(calories)));
     return res.json({ ok: true, kind: 'meal' });
   }
 
@@ -165,11 +207,13 @@ app.post('/api/log', requireToken, (req, res) => {
     if (!id || !date || !Number.isFinite(Number(value)) || Number(value) <= 0) {
       return res.status(400).json({ error: 'Invalid weight payload' });
     }
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO weights (id, date, value)
       VALUES (?, ?, ?)
       ON CONFLICT(date) DO UPDATE SET value=excluded.value, updated_at=datetime('now')
-    `).run(id, date, Number(value));
+    `,
+    ).run(id, date, Number(value));
     return res.json({ ok: true, kind: 'weight' });
   }
 
