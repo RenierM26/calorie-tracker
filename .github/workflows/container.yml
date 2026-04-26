@@ -31,6 +31,15 @@ jobs:
       - name: Syntax check
         run: npm run check
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Unit/API tests
+        run: npm test
+
       - name: Smoke test API
         run: npm run smoke
 
