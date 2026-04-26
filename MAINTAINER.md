@@ -281,3 +281,53 @@ When editing features:
 2. Keep migration-safe startup logic in `server.js`
 3. Rebuild + reconnect `infra_proxy`
 4. Update this file with meaningful structural changes
+
+---
+
+## Release checklist
+
+Use this checklist when publishing a new stable version.
+
+1. Merge the intended PR(s) into `main`.
+2. Confirm required checks are green on `main`:
+   - Container / build
+   - npm audit
+   - CodeQL
+3. Open **Actions → Release → Run workflow**.
+4. Enter the next semver version, for example `1.0.6`.
+5. Verify the workflow succeeds.
+6. Verify GitHub Release exists for `vX.Y.Z`.
+7. Verify GHCR tags resolve:
+   - `latest`
+   - `vX.Y.Z`
+   - `X.Y.Z`
+   - `X.Y`
+   - `sha-<commit>`
+8. For `latest` deployments, pull and recreate the service:
+
+   ```bash
+   docker compose pull
+   docker compose down
+   docker compose up -d
+   ```
+
+   The clean `down`/`up` avoids stale Synology Container Manager replacement labels. Do **not** use `down -v` unless intentionally deleting data.
+
+9. Verify deployment:
+
+   ```bash
+   curl http://localhost:8092/api/health
+   curl http://localhost:8092/api/export > /tmp/calorie-export-check.json
+   ```
+
+10. If import/restore changed, test a safe dry-run:
+
+    ```bash
+    npm run import -- /tmp/calorie-export-check.json http://localhost:8092
+    ```
+
+11. Confirm Docker labels show the expected app version and no stale `com.docker.compose.replace` label.
+
+## Maintainer privacy rule
+
+Never use real food logs, weights, exports, SQLite databases, or home screenshots in public repo examples. Use synthetic data only.
