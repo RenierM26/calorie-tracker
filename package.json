@@ -20,7 +20,7 @@
     "node": ">=22 <25"
   },
   "devDependencies": {
-    "eslint": "^9.39.1",
+    "eslint": "^10.2.1",
     "prettier": "^3.6.2"
   }
 }
